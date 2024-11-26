@@ -17,32 +17,69 @@ function Home() {
 
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [isSuccess, setIsuccess] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
+   // Error states
+   const [fullNameError, setFullNameError] = useState("");
+   const [emailError, setEmailError] = useState("");
 
-  const handleFormSubmit = async (e) => {
+   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    setIsLoading(true);
+    
+    // Reset errors before validation
+    setFullNameError("");
+    setEmailError("");
 
-    try {
-      // Save the user data to Firestore
-      const docRef = await addDoc(collection(db, "users"), {
-        fullName,
-        email,
-        createdAt: new Date(),
-      });
+    let valid = true;
 
-      console.log("Document successfully added with ID: ", docRef.id);
-      setFullName("");
-      setEmail("");
-    } catch (error) {
+    // Validate fullName
+    if (!fullName) {
+      setFullNameError("Full Name is required.");
+      valid = false;
+      setIsLoading(false);
+    }
 
-      console.error("Error adding document: ", error);
+    // Validate email
+    if (!email) {
+      setEmailError("Email is required.");
+      valid = false;
+      setIsLoading(false);
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      setEmailError("Please enter a valid email.");
+      valid = false;
+      setIsLoading(false);
+    }
+
+    // If validation passes, send the data
+    if (valid) {
+      try {
+        const docRef = await addDoc(collection(db, "users"), {
+          fullName,
+          email,
+          createdAt: new Date(),
+        });
+
+        if (docRef) {
+          setIsuccess(true);
+          setIsLoading(false);
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 2000);
+        }
+      } catch (error) {
+        console.error("Error adding document: ", error);
+      }
+    } else {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="flex flex-col min-h-screen text-white bg-gradient-to-b from-[#007AFF] to-black m-0">
       {/* Header Section */}
-      <div className="w-full flex justify-between items-center px-6 lg:px-36 py-4">
+      <div className="w-full flex justify-between items-center px-4 lg:px-36 py-4">
         <img src="/logo.png" alt="Densiflow Logo" className="h-14" />
       </div>
 
@@ -60,37 +97,56 @@ function Home() {
             <p className="mt-8 text-md font-[300]">
               Stop guessing and start planning smarter. Densiflow shows you the
               real-time crowd status of popular spots like cafes, restaurants, and
-              parks—and notifies you when it's the perfect time to visit.
+              parks—and notifies you when it{`'`}s the perfect time to visit.
             </p>
             <p className="mt-4 font-semibold text-lg">
               Don’t miss out—join the waitlist for early access to Densiflow!
             </p>
 
             {/* Input Form */}
-            <div className="mt-4 space-y-4 lg:max-w-[21rem] w-full">
+            <div className="mt-4 lg:max-w-[21rem] w-full">
               <div className="flex items-center rounded-lg p-2 bg-[#FFFFFF] bg-opacity-10">
                 <User className="text-gray-500 mr-3 ml-3" />
                 <input
                   type="text"
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="flex-1 bg-transparent outline-none text-white placeholder-gray-100"
+                  onChange={(e) => {
+                    setFullName(e.target.value);
+                    if (e.target.value) setFullNameError("");
+                  }}
+                  className="w-full bg-transparent outline-none text-white placeholder-gray-100"
                   placeholder="Full Name"
                   required
                 />
               </div>
-              <div className="flex items-center rounded-lg p-2 bg-[#FFFFFF] bg-opacity-10">
+              {fullNameError && <p className="text-red-500 text-sm mt-1">{fullNameError}</p>}
+
+              <div className="flex mt-2 mb-2 items-center rounded-lg p-2 bg-[#FFFFFF] bg-opacity-10">
                 <Email className="text-gray-500 mr-3 ml-3" />
                 <input
                   type="text"
-                  className="flex-1 bg-transparent outline-none text-white placeholder-gray-100"
+                  className="w-full bg-transparent outline-none text-white placeholder-gray-100"
                   placeholder="Email Address"
                   required
-                  onChange={(e) => setEmail(e.target.value)}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    if (e.target.value) setEmailError("");
+                  }}
                 />
               </div>
+              {emailError && <p className="text-red-500 text-sm mt-1 mb-2">{emailError}</p>}
+              
               <button onClick={(e)=> handleFormSubmit(e)} className="w-full relative flex items-center justify-center bg-primary text-white py-3 rounded-lg hover:bg-blue-700 transition">
-                <span className="w-full text-center">Join the Waitlist</span>
-                <Arrow className="absolute right-4" />
+              {isLoading ? (
+        <div className="flex items-center space-x-2">
+          <div className="spinner border-t-transparent border-white border-2 border-solid rounded-full w-4 h-4 animate-spin"></div>
+          <span className="text-center">Loading...</span>
+        </div>
+      ) : (
+        <>
+          <span className="w-full text-center">Join the Waitlist</span>
+          <Arrow className="absolute right-4" />
+        </>
+      )}
               </button>
 
           
@@ -98,21 +154,31 @@ function Home() {
 
                 {/*SUCCESS */}
 
-                <div className="flex gap-2 items-center mt-2 lg:max-w-[25rem] border bg-[#FFFFFF] bg-opacity-10 border-primary p-2 rounded-lg">
+            {isSuccess ?     <div className="flex gap-2 items-center mt-2 lg:max-w-[25rem] border bg-[#FFFFFF] bg-opacity-10 border-primary p-2 rounded-lg">
                 <Success/>
                 <div className="">
-                We’ve added <span className="font-bold">shennacanas@gmail.com</span> to our waitlist. We’ll let you know when Densiflow is ready.
+                We’ve added <span className="font-bold">{email}</span> to our waitlist. We’ll let you know when Densiflow is ready.
                 </div>
-              </div>
+              </div> : ''}
 
             {/* Social Media Links */}
             <div className="lg:mt-20 mt-10 flex flex-col">
               <div className="flex gap-4 md:justify-start justify-center">
+                <a href="https://www.youtube.com/@peakmediaph" target="_blank">
                 <Youtube className="text-gray-400 hover:text-white transition" />
+                </a>
+                <a href="https://www.facebook.com/Excesol" target="_blank">
                 <Facebook className="text-gray-400 hover:text-white transition" />
+                </a>
+                <a href="https://x.com/excesolutions" target="_blank">
                 <Twitter className="text-gray-400 hover:text-white transition" />
+                </a>
+                <a href="https://www.instagram.com/excesolutions" target="_blank">
                 <Instagram className="text-gray-400 hover:text-white transition" />
+                </a>
+                <a href="https://www.linkedin.com/company/excesol" target="_blank">
                 <Linkedin className="text-gray-400 hover:text-white transition" />
+                </a>
               </div>
               <p className="text-lg mt-4 md:text-start text-center">
                 © 2024 Densiflow. All Rights Reserved.
