@@ -83,7 +83,7 @@ function Home() {
       </div>
 
       {/* Main Content */}
-      <div className="flex flex-col relative px-6 lg:px-36 lg:pr-16 py-8 ">
+      <div className="flex flex-col relative px-6 lg:px-36 lg:pr- py-8 ">
         <div className="flex flex-col lg:flex-row  gap-5 ">
           {/* Left Content: Text and Form */}
           <div className="flex-1 lg:max-w-[40rem] max-w-full w-full lg:text-left 2xl:mt-10 md:mt-5 mb-9">
@@ -173,7 +173,7 @@ function Home() {
               ""
             )}
 
-            <div className=" lg:flex flex-col 2xl:mt-40 lg:mt-24 hidden">
+            <div className=" lg:flex flex-col 2xl:mt-[11.5rem] lg:mt-24 hidden">
               <div className="flex gap-4 md:justify-start justify-center">
                 <a href="https://www.youtube.com/@peakmediaph" target="_blank">
                   <Youtube className="text-gray-400 hover:text-white transition" />
@@ -206,11 +206,26 @@ function Home() {
           {/* Right Content: Phone Image and App Links */}
           <div className="flex-1 flex flex-col items-center justify-center md:py-0 py-10">
             <img
-              src="/function.png"
+              src="/max.png"
               alt="Densiflow App Preview"
-              className="w-full lg:w-[50rem] mx-auto"
+              className="w-full lg:w-[57rem] md:flex hidden mx-auto"
             />
-            <div className="flex flex-col md:mt-16 mt-12">
+            <img
+              src="/newone.png"
+              alt="Densiflow App Preview"
+              className="w-full lg:w-[30rem] md:hidden flex rounded-3xl mx-auto"
+            />
+               <img
+              src="/newthree.png"
+              alt="Densiflow App Preview"
+              className="w-full lg:w-[30rem] mt-5 md:hidden flex rounded-3xl mx-auto"
+            />
+                         <img
+              src="/newtwo.png"
+              alt="Densiflow App Preview"
+              className="w-full lg:w-[30rem] mt-5 md:hidden flex rounded-3xl mx-auto"
+            />
+            <div className="flex flex-col mt-10">
               <p className="text-center">Available soon on</p>
               <div className="flex flex-wrap justify-center md:flex-nowrap gap-4 mt-4">
                 {/* Google Play Button */}
